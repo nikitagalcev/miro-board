@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import './Note.css'
 
 export interface INote {
   ownerName: string;
@@ -7,10 +8,10 @@ export interface INote {
   id: number;
   color: string;
   noteText?: string;
-}
+};
 
 interface INoteProps extends INote {
-  userName: string;
+  isCardOwner: boolean;
   handleMouseUp: () => void;
   handleOnMouseDown: () => void;
   handleDrag: (e:React.MouseEvent) => void;
@@ -18,7 +19,7 @@ interface INoteProps extends INote {
 };
 
 const Note: React.FC<INoteProps> = memo(({
-  userName,
+  isCardOwner,
   ownerName,
   color,
   posX,
@@ -29,7 +30,6 @@ const Note: React.FC<INoteProps> = memo(({
   handleOnMouseDown,
   handleInputChange,
 }) => {
-  const isCardOwner = userName === ownerName;
 
   const noteStyles:React.CSSProperties = {
     position: 'absolute',

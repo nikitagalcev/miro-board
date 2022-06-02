@@ -1,7 +1,5 @@
-// const loginEndpoint;
-
 export const setupLoginRequest = async (userName: string) => {
-  const res = await fetch('/login', {
+  const res = await fetch('/api/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -9,5 +7,5 @@ export const setupLoginRequest = async (userName: string) => {
     body: JSON.stringify({ userName }),
   });
 
-  return res.ok; // или не ок блядь
+  return res.ok;
 };

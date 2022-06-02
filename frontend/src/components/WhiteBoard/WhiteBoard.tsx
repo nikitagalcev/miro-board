@@ -1,39 +1,37 @@
 import React, { memo, useState, useEffect, useRef, useCallback, Fragment } from 'react';
-import useSockets from '../hooks/useSockets';
-import Note, { INote } from './Note';
+import { getRandomColor } from '../../helpers/getRandomColor';
+import useSockets from '../../hooks/useSockets';
+import Note, { INote } from '../Note/Note';
+import './WhiteBoard.css';
 
 interface IWhiteBoardProps {
   userName: string;
 };
 
-interface IAddNote {
-  userName: string;
-  posX: number;
-  posY: number;
-};
+type AddNoteType = Pick<INote,'ownerName'| 'posX' | 'posY'>;
 
 const WhiteBoard: React.FC<IWhiteBoardProps> = memo(({ userName }) => {
   const [notes, setNotes] = useState<INote[]>([]);
-  const currentDraggableNote = useRef<number | null>(null);
+  const currentDraggableNote = useRef<INote['id'] | null>(null);
 
   const {
     sendNoteViaSocket,
-    parsedNotes,
     updateNoteViaSocket,
     debouncedNoteUpdateViaSocket,
+    parsedNotes,
   } = useSockets({ userName });
 
   useEffect(() => {
     setNotes(parsedNotes);
   }, [parsedNotes]);
 
-  const addNote = useCallback(({ userName, posX, posY }: IAddNote) => {
+  const addNote = useCallback(({ ownerName, posX, posY }: AddNoteType) => {
     const note = {
-      ownerName: userName,
+      ownerName,
       posX,
       posY,
       id: new Date().valueOf(),
-      color: 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
+      color: getRandomColor(),
     };
 
     setNotes([...notes, note]);
@@ -41,17 +39,15 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = memo(({ userName }) => {
   }, [notes, sendNoteViaSocket]);
 
   const handleWhiteBoardClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target !== event.currentTarget) return;
+    if (event.target !== event.currentTarget || currentDraggableNote.current) return;
 
     const { clientX, clientY } = event;
 
-    if (!currentDraggableNote.current) {
-      addNote({ userName, posX: clientX, posY: clientY });
-    }
+    addNote({ ownerName: userName, posX: clientX, posY: clientY });
   }, [addNote, userName]);
 
 
-  const handleOnMouseDown = useCallback((id: number, ownerName: string) => () => {
+  const handleOnMouseDown = useCallback((id: INote['id'], ownerName: INote['ownerName']) => () => {
     if (userName !== ownerName) return;
 
     currentDraggableNote.current = id;
@@ -64,7 +60,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = memo(({ userName }) => {
       updateNoteViaSocket(currentNote);
     }
 
-    currentDraggableNote.current = null
+    currentDraggableNote.current = null;
   }, [notes, updateNoteViaSocket]);
 
   const handleDrag = useCallback((e: React.MouseEvent) => {
@@ -85,8 +81,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = memo(({ userName }) => {
     });
   }, []);
 
-
-  const handleInputChange = useCallback((id: number) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = useCallback((id: INote['id']) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNotes((prevState) => {
       const currentNote = prevState.find((note) => note.id === id);
 
@@ -109,7 +104,7 @@ const WhiteBoard: React.FC<IWhiteBoardProps> = memo(({ userName }) => {
         {notes.length ? notes.map((note: INote) => (
           <Note
             key={note.id}
-            userName={userName}
+            isCardOwner={userName === note.ownerName}
             handleDrag={handleDrag}
             handleMouseUp={handleMouseUp}
             handleOnMouseDown={handleOnMouseDown(note.id, note.ownerName)}

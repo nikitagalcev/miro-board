@@ -1,6 +1,7 @@
 import React, { useState, useCallback, memo } from 'react';
-import { useNavigate } from "react-router-dom";
-import { setupLoginRequest } from '../api';
+import { useNavigate } from 'react-router-dom';
+import { setupLoginRequest } from '../../api';
+import './Login.css'
 
 const Login: React.FC = memo(() => {
   const navigate = useNavigate();
@@ -9,20 +10,21 @@ const Login: React.FC = memo(() => {
 
   const handleSubmit = useCallback(async (event: React.SyntheticEvent) => {
     event.preventDefault();
-    if (name) {
-      const loginSuccess = await setupLoginRequest(name);
-      if (loginSuccess) {
-        localStorage.setItem('userName', name);
-        setErrorMessage(null);
-        return navigate("/");
-      }
-    }
 
-    setErrorMessage('Something unexpected happend, please try again');
+    if (!name) return;
+
+    try {
+      await setupLoginRequest(name);
+      localStorage.setItem('userName', name);
+      setErrorMessage(null);
+      return navigate("/");
+    } catch {
+      setErrorMessage('Something unexpected happend, please try again');
+    }
   }, [name, navigate]);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', justifyContent: 'center', alignItems: 'center', display: 'flex' }} >
+    <div className='login'>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -36,6 +38,5 @@ const Login: React.FC = memo(() => {
     </div>
   )
 });
-
 
 export default Login;

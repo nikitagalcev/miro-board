@@ -1,8 +1,8 @@
 import { Express, Request, Response } from 'express';
-import { ISuperStorage } from '../database';
+import { ISuperDatabase } from '../database/super_storage';
 
-export const register_routes = (app: Express, storage: ISuperStorage) => {
-  app.post('/login', async (req: Request, res: Response) => {
+export const register_routes = (app: Express, storage: ISuperDatabase) => {
+  app.post('/api/login', async (req: Request, res: Response) => {
     const { userName: user_name } = req.body;
 
     if (user_name) {

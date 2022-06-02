@@ -1,23 +1,23 @@
 {
-  "name": "backend",
+  "name": "miro-board-backend",
   "version": "1.0.0",
-  "description": "",
+  "author": "Nikita Galtsev",
+  "license": "ISC",
+  "description": "Backend side of miro-like board",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/index.ts"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@types/express": "^4.17.13",
-    "express": "^4.18.1",
-    "socket.io": "^4.5.1",
-    "ts-node": "^10.8.0",
-    "typescript": "^4.7.2"
+    "@types/express": "4.17.13",
+    "express": "4.18.1",
+    "socket.io": "4.5.1",
+    "ts-node": "10.8.0",
+    "typescript": "4.7.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "nodemon": "2.0.16"
   }
 }

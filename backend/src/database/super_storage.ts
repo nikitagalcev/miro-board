@@ -7,27 +7,28 @@ export interface INote {
   noteText?: string;
 };
 
-export interface ISuperStorage {
+export interface ISuperDatabase {
   add_user(name: string): void;
   get_all_notes(): INote[];
   update_note(note: INote): void;
   update_all_notes(note: INote): void;
 };
 
-export class super_database implements ISuperStorage {
-  notes: Map<number, INote> = new Map();
-  users = new Set<string>();
+type User = string;
 
-  add_user(name: string): void {
+export class super_database implements ISuperDatabase {
+  private notes: Map<INote['id'], INote> = new Map();
+  private users = new Set<User>();
+
+  add_user(name: string) {
     this.users.add(name);
   }
 
-  get_all_notes(): INote[] {
+  get_all_notes() {
     return [...this.notes.values()];
   }
 
   update_note(note: INote) {
-    console.log({ note });
     this.notes.set(note.id, note);
   }
 

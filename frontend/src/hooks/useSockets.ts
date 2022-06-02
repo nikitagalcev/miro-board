@@ -1,7 +1,7 @@
 import { debounce, DebouncedFunc } from 'lodash';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { INote } from '../components/Note';
+import { INote } from '../components/Note/Note';
 
 interface IUseSockets {
   ({ userName }: { userName: string}): {
@@ -13,58 +13,58 @@ interface IUseSockets {
 };
 
 const useSockets: IUseSockets = ({ userName }) => {
-  let socket = useRef<Socket>();
-
-  const [, triggerUpdate] = useState<number>();
-
+  const [socket, setSocket] = useState<Socket>();
   const [parsedNotes, setParsedNotes] = useState<INote[]>([]);
   
   const initiateSocketConnection = useCallback(() => {
-    socket.current = io('http://localhost:4000', {
-      transports: ['websocket', 'polling', 'flashsocket'], // todo read about it
+    const socketCurrent = io(process.env.ws ?? 'http://localhost:4000', {
+      transports: ['websocket', 'polling', 'flashsocket'],
       query: { user_name: userName },
     });
 
-    triggerUpdate(Math.random());
+    setSocket(socketCurrent);
     console.log('Connecting socket...');
   }, [userName])
   
   const disconnectSocket = useCallback(() => {
     console.log('Disconnectiong socket...');
   
-    if (socket.current) socket.current.disconnect();
-  }, []);
+    if (socket) socket.disconnect();
+  }, [socket]);
   
   const sendNoteViaSocket = useCallback((note: INote) => {
-    if (socket.current) {
-      socket.current.emit('update_all_notes', note);
+    if (socket) {
+      socket.emit('update_all_notes', note);
     }
-  }, []);
+  }, [socket]);
 
   const updateNoteViaSocket = useCallback((note: INote) => {
-    if (socket.current) {
-      socket.current.emit('update_note', note);
+    if (socket) {
+      socket.emit('update_note', note);
     }
-  }, []);
+  }, [socket]);
 
   const debouncedNoteUpdateViaSocket = useCallback(
     debounce((currentNote) => updateNoteViaSocket(currentNote), 400), 
     [updateNoteViaSocket]);
 
-
   useEffect(() => {
     if (userName) {
       initiateSocketConnection();
+    }
+  }, [userName]);
 
-      socket.current?.on('get_all_notes', (data: INote[]) => {
+  useEffect(() => {
+    if (socket) {
+      socket?.on('get_all_notes', (data: INote[]) => {
         setParsedNotes(data);
       });
-
+  
       return () => {
         disconnectSocket();
       }
     }
-  }, [disconnectSocket, initiateSocketConnection, userName]);
+  }, [socket])
 
   return {
     sendNoteViaSocket,
