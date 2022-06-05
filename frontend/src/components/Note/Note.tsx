@@ -2,11 +2,11 @@ import React, { memo } from 'react';
 import './Note.css'
 
 export interface INote {
-  readonly ownerName: string;
-  readonly id: number;
-  readonly color: string;
+  ownerName: string;
   posX: number;
   posY: number;
+  id: number;
+  color: string;
   noteText?: string;
 };
 
