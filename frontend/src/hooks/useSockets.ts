@@ -12,12 +12,14 @@ interface IUseSockets {
   }
 };
 
+const isDev = process.env.NODE_ENV === 'development';
+
 const useSockets: IUseSockets = ({ userName }) => {
   const [socket, setSocket] = useState<Socket>();
   const [parsedNotes, setParsedNotes] = useState<INote[]>([]);
   
   const initiateSocketConnection = useCallback(() => {
-    const socketCurrent = io(process.env.ws ?? 'http://localhost:4000', {
+    const socketCurrent = io(isDev ? 'http://localhost:4000' : '/', {
       transports: ['websocket', 'polling', 'flashsocket'],
       query: { user_name: userName },
     });
