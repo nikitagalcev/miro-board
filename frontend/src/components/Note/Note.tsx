@@ -2,11 +2,11 @@ import React, { memo } from 'react';
 import './Note.css'
 
 export interface INote {
-  ownerName: string;
+  readonly ownerName: string;
+  readonly id: number;
+  readonly color: string;
   posX: number;
   posY: number;
-  id: number;
-  color: string;
   noteText?: string;
 };
 
@@ -33,8 +33,8 @@ const Note: React.FC<INoteProps> = memo(({
 
   const noteStyles:React.CSSProperties = {
     position: 'absolute',
-    top: posY - 125,
-    left: posX - 125,
+    top: posY - 125, // 125 - half of height
+    left: posX - 125, // 125 - half of width
     backgroundColor: color,
     cursor: isCardOwner ? 'grab' : 'not-allowed',
     ...(isCardOwner ? { border: '4px dashed black' } : {}),
