@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import './Logout.css'
 
 interface ILogoutProps {
   userName: string;
@@ -10,7 +11,7 @@ const LogoutButton: React.FC<ILogoutProps> = memo(({
   handleLogoutClick
 }) => {
   return (
-    <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 99999 }}>
+    <div className='logout'>
       <button onClick={handleLogoutClick}>Logout from {userName}</button>
     </div>
   )
